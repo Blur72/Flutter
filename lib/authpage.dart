@@ -1,24 +1,21 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/database/auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class RecoveryPage extends StatefulWidget {
-  const RecoveryPage({super.key});
+class AuthPage extends StatefulWidget {
+  const AuthPage({super.key});
 
   @override
-  State<RecoveryPage> createState() => _RecoveryPageState();
+  State<AuthPage> createState() => _AuthPageState();
 }
 
-class _RecoveryPageState extends State<RecoveryPage> {
+class _AuthPageState extends State<AuthPage> {
   TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   AuthService authService = AuthService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Восстановление доступа"),
-        leading: IconButton(onPressed: () {}, icon: Icon(CupertinoIcons.back)),
-      ),
         body: Center(
       child: SingleChildScrollView(
         child: Column(
@@ -27,17 +24,14 @@ class _RecoveryPageState extends State<RecoveryPage> {
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.2,
             ),
+            Text("Войти в MishTok",
+                textScaler: TextScaler.linear(2.5),
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                )),
             SizedBox(
-              width: MediaQuery.of(context).size.width * 0.9,
-              child: Text("Для восстановления доступа к аккаунту, введите свою почту для отправки сообщения",
-              textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  )),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.04,
+              height: MediaQuery.of(context).size.height * 0.03,
             ),
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.9,
@@ -52,14 +46,42 @@ class _RecoveryPageState extends State<RecoveryPage> {
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(color: Colors.blueGrey)),
                     prefixIcon: Icon(Icons.email),
-                    hintText: 'Отправить на почту'),
+                    hintText: 'Введите почту'),
               ),
             ),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.01,
             ),
             SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: TextField(
+                controller: passwordController,
+                obscureText: true,
+                cursorColor: Colors.black,
+                decoration: InputDecoration(
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.blueGrey)),
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.blueGrey)),
+                  prefixIcon: Icon(Icons.lock),
+                  hintText: 'Введите пароль',
+                ),
+              ),
+            ),
+            SizedBox(
               height: MediaQuery.of(context).size.height * 0.01,
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              alignment: Alignment.centerRight,
+              child: InkWell(
+                child: Text("Восстановить пароль"),
+                onTap: () {
+                  Navigator.popAndPushNamed(context, '/recovery');
+                },
+              ),
             ),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.025,
@@ -67,17 +89,24 @@ class _RecoveryPageState extends State<RecoveryPage> {
             SizedBox(
                 height: MediaQuery.of(context).size.height * 0.06,
                 width: MediaQuery.of(context).size.width * 0.9,
-                child: ElevatedButton(onPressed: () async {
-                  if(emailController.text.isEmpty){
-                    print('Поле пустое');
-                  } else {
-                    await authService.recoveryPassword(emailController.text);
-                    print('Письмо отправлено');
-                    emailController.clear();
-                    Navigator.popAndPushNamed(context, '/');
-                  }
-                }, 
-                child: Text("Отправить на почту"))),
+                child: ElevatedButton(
+                    onPressed: () async {
+                      if (emailController.text.isEmpty ||
+                          passwordController.text.isEmpty) {
+                        print("Поля не заполнены!");
+                      } else {
+                        var user = await authService.signIn(
+                            emailController.text, passwordController.text);
+                            Navigator.popAndPushNamed(context, '/home');
+                        if (user != null) {
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.setBool('isLoggedIn', true);
+                        } else {
+                          print("Неправильные данные");
+                        }
+                      }
+                    },
+                    child: Text("Войти"))),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.25,
             ),

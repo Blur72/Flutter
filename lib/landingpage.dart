@@ -1,16 +1,16 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_application_1/auth.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_application_1/authpage.dart';
 import 'package:flutter_application_1/homepage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LandingPage extends StatefulWidget {
-  const LandingPage({super.key});
+class Landingpage extends StatefulWidget {
+  const Landingpage({super.key});
 
   @override
-  State<LandingPage> createState() => _MyWidgetState();
+  State<Landingpage> createState() => _LandingpageState();
 }
 
-class _MyWidgetState extends State<LandingPage> {
+class _LandingpageState extends State<Landingpage> {
   bool _isLoggedIn = false;
   Future<void> _checkAuth() async {
     final prefs = await SharedPreferences.getInstance();
@@ -31,4 +31,5 @@ class _MyWidgetState extends State<LandingPage> {
   Widget build(BuildContext context) {
     return _isLoggedIn ? HomePage() : const AuthPage();
   }
+
 }
