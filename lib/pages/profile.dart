@@ -21,6 +21,8 @@ class _ProfilePageState extends State<ProfilePage> {
   String? url;
   UserTable userTable = UserTable();
   Supabase supabase = Supabase.instance;
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   Future selectedImageGallery() async {
     final returnImage = await ImagePicker().pickImage(
@@ -73,6 +75,66 @@ class _ProfilePageState extends State<ProfilePage> {
             .single();
 
     return doc;
+  }
+
+  Future<void> _showEditDialog(
+    String title,
+    String currentValue,
+    bool isName,
+    Map<String, dynamic> docs,
+  ) async {
+    final controller = isName ? _nameController : _descriptionController;
+    controller.text = currentValue;
+
+    return showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text('Изменить $title'),
+            content: TextField(
+              controller: controller,
+              decoration: InputDecoration(hintText: 'Введите новое значение'),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Отмена'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  try {
+                    await userTable.updateUser(
+                      isName ? controller.text : docs["name"],
+                      isName ? docs["description"] : controller.text,
+                      user,
+                    );
+                    // ignore: use_build_context_synchronously
+                    Navigator.pop(context);
+                    setState(() {});
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('$title успешно обновлен(о)')),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Произошла ошибка при обновлении'),
+                      ),
+                    );
+                  }
+                },
+                child: const Text('Сохранить'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 
   @override
@@ -162,7 +224,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           leading: const Icon(Icons.email),
                           title: Text(docs["email"] ?? "Нет данных"),
                           subtitle: const Text("Почта"),
-                          trailing: const Icon(Icons.edit),
                           onTap: () {},
                         ),
                       ),
@@ -175,7 +236,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           title: Text(docs["name"] ?? "Нет данных"),
                           subtitle: const Text("Имя"),
                           trailing: const Icon(Icons.edit),
-                          onTap: () {},
+                          onTap:
+                              () => _showEditDialog(
+                                'имя',
+                                docs["name"] ?? "",
+                                true,
+                                docs,
+                              ),
                         ),
                       ),
                       Card(
@@ -187,7 +254,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           title: Text(docs["description"] ?? "Нет данных"),
                           subtitle: const Text("Описание"),
                           trailing: const Icon(Icons.edit),
-                          onTap: () {},
+                          onTap:
+                              () => _showEditDialog(
+                                'описание',
+                                docs["description"] ?? "",
+                                false,
+                                docs,
+                              ),
                         ),
                       ),
                     ],

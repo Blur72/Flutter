@@ -25,21 +25,21 @@ class _HomePageState extends State<HomePage> {
         title: Text(title),
         actions: [
           IconButton(
-              onPressed: () async {
-                await authService.signOut();
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.setBool('isLoggedIn', false);
-                Navigator.popAndPushNamed(context, '/reg');
-              },
-              icon: Icon(Icons.logout))
+            onPressed: () async {
+              await authService.signOut();
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setBool('isLoggedIn', false);
+              Navigator.popAndPushNamed(context, '/reg');
+            },
+            icon: Icon(Icons.logout),
+          ),
         ],
       ),
       body: pages.elementAt(_currentIndex),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Color(0xff2b2d42),
-        onPressed: () {
-
-        }, child: Icon(Icons.add, color: Colors.white,),
+        onPressed: () {},
+        child: Icon(Icons.add, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomNavigationBar(
@@ -62,22 +62,44 @@ class _HomePageState extends State<HomePage> {
           }
         },
         items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: ''),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: StreamBuilder<int>(
+              stream: NotificationPage.getUnreadCount(),
+              builder: (context, snapshot) {
+                final count = snapshot.data ?? 0;
+                return Stack(
+                  children: [
+                    Icon(Icons.notifications),
+                    if (count > 0)
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          padding: EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          constraints: BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
+                          child: Text(
+                            '$count',
+                            style: TextStyle(color: Colors.white, fontSize: 10),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
             label: '',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: ''),
         ],
         showSelectedLabels: false,
         showUnselectedLabels: false,

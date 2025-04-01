@@ -9,9 +9,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
-    url: "https://vhdsykipnfvohmmuvbnw.supabase.co", 
-    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoZHN5a2lwbmZ2b2htbXV2Ym53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NzIyMTUsImV4cCI6MjA1NTQ0ODIxNX0._mQBBbehC3mfQ4OSr6Jd54Y9wJFe031ctO-0GlTvwSs"
-    );
+    url: "https://vhdsykipnfvohmmuvbnw.supabase.co",
+    anonKey:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZoZHN5a2lwbmZ2b2htbXV2Ym53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NzIyMTUsImV4cCI6MjA1NTQ0ODIxNX0._mQBBbehC3mfQ4OSr6Jd54Y9wJFe031ctO-0GlTvwSs",
+  );
   runApp(const MyApp());
 }
 
@@ -27,28 +28,33 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           backgroundColor: Colors.white,
-          selectedItemColor: Color(0xff2B2D42)
+          selectedItemColor: Color(0xff2B2D42),
         ),
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: AppBarTheme(backgroundColor: Colors.white),
         elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(Color(0xff2B2D42)),
-                foregroundColor: WidgetStatePropertyAll(Colors.white),
-                shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side: BorderSide.none)))),
+          style: ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll(Color(0xff2B2D42)),
+            foregroundColor: WidgetStatePropertyAll(Colors.white),
+            shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide.none,
+              ),
+            ),
+          ),
+        ),
         useMaterial3: true,
       ),
+
       initialRoute: '/',
       routes: {
-        '/' : (context) => Landingpage(),
+        '/': (context) => Landingpage(),
         '/auth': (context) => AuthPage(),
         '/reg': (context) => RegPage(),
-        '/home' : (context) => HomePage(),
-        '/recovery': (context) => RecoveryPage()
+        '/home': (context) => HomePage(),
+        '/recovery': (context) => RecoveryPage(),
       },
     );
   }
 }
-

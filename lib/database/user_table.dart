@@ -17,4 +17,15 @@ class UserTable {
     };
   }
 
+  Future<void> updateUser(String nickname, String desc, String uid) async{
+    try {
+      await _supabase.client
+        .from('users')
+        .update({'name': nickname, 'description': desc})
+        .eq('id', uid);
+    } catch (e) {
+      return;
+    }
+  }
+
 }
